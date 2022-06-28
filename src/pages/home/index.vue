@@ -29,7 +29,7 @@
             <div class="text-start text-xs">
               <span>Report period</span>
             </div>
-            <div class="flex flex-row space-x-2 items-center">
+            <div class="flex flex-row space-x-3 items-center">
               <div class="">
                 <input
                   class="p-inputtext p-inputtext-sm"
@@ -54,7 +54,7 @@
               </div>
             </div>
           </div>
-          <div class="w-full flex space-x-2 mt-5 text-xs">
+          <div class="w-full flex space-x-3 mt-5 text-xs">
             <div class="flex flex-col space-y-2">
               <label for="" class="flex justify-start truncate"
                 >Display columns by</label
@@ -87,6 +87,26 @@
                 style="height: 30px"
                 type="text"
               />
+            </div>
+            <div class="flex flex-col space-y-2" style="width: 150px">
+              <label for="" class="flex justify-start truncate"
+                >Accounting method</label
+              >
+              <div class="flex flex-row items-center justify-between">
+                <div class="flex items-center space-x-1">
+                  <RadioButton></RadioButton> <label for="">Cash</label>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <RadioButton></RadioButton> <label for="">Accrual</label>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col px-8" style="width: 150px">
+              <Button
+                label="Refresh"
+                class="p-button-sm p-button-info p-button-outlined truncate"
+                style="height: 30px !important"
+              ></Button>
             </div>
           </div>
         </div>
@@ -234,7 +254,7 @@
             </template>
             <template #body="slotProp">
               <div
-                class="bg-gray-100 text-end w-full font-bold -mx-3"
+                class="bg-gray-100 text-end w-full font-bold"
                 v-if="slotProp.node.data.isSummary"
               >
                 {{ slotProp.node.data.amount }}
@@ -269,6 +289,7 @@ import Button from "primevue/button";
 import Sidebar from "primevue/sidebar";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
+import RadioButton from "primevue/radiobutton";
 
 export default {
   components: {
@@ -278,9 +299,9 @@ export default {
     Sidebar,
     Dropdown,
     Calendar,
+    RadioButton,
   },
   data() {
-
     const nodes = [
       {
         key: "0",
