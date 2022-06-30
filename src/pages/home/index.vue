@@ -167,113 +167,10 @@
       </div>
       <!-- Table -->
       <div class="container mx-auto border h-auto p-2" style="width: 1200px">
-        <TreeTable
-          :value="nodes"
-          :expandedKeys="expandedKeys"
-          class="p-treetable-sm"
-          :scrollable="true"
-          :resizableColumns="true"
-          columnResizeMode="fit"
-          ref="dt"
-          @node-expand="onNodeExpand"
-          @node-collapse="onNodeCollapse"
-        >
-          <template #header>
-            <div
-              class="table-header items-center justify-between flex flex-col"
-            >
-              <div class="border-b p-2 flex justify-between w-full select-none">
-                <div class="text-blue-500 flex space-x-3 text-sm">
-                  <div class="cursor-pointer" @click="toggleExpand">
-                    {{ labelExpand }}
-                  </div>
-                  <div class="cursor-pointer">Sort</div>
-                  <div class="cursor-pointer">Add note</div>
-                  <div class="cursor-pointer">Edit title</div>
-                </div>
-                <div class="flex space-x-3">
-                  <div class="h-full cursor-pointer">
-                    <span class="pi pi-wallet"></span>
-                  </div>
-                  <div class="h-full cursor-pointer">
-                    <span class="pi pi-print"></span>
-                  </div>
-                  <div class="h-full cursor-pointer">
-                    <span class="pi pi-upload"></span>
-                  </div>
-                  <div class="h-full cursor-pointer">
-                    <span class="pi pi-cog"></span>
-                  </div>
-                </div>
-              </div>
-              <div class="border-b p-2 text-blue-300 w-full flex">
-                <div
-                  class="
-                    flex flex-col
-                    space-y-3
-                    items-center
-                    justify-center
-                    w-full
-                    pt-2
-                    text-gray-800
-                  "
-                >
-                  <h1 class="text-2xl">My Sample Company Group</h1>
-                  <div class="flex items-center justify-center flex-col">
-                    <h2>Profit and Loss</h2>
-                    <h2>January 1 - June 26, 2022</h2>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-          <Column
-            field="name"
-            :expander="true"
-            class="flex justify-start items-start calibril"
-          >
-            <template #body="slotProp">
-              <div
-                class="bg-gray-100 w-full font-bold"
-                v-if="slotProp.node.data.isSummary"
-              >
-                {{ slotProp.node.data.name }}
-              </div>
-              <div class="" v-else>{{ slotProp.node.data.name }}</div>
-            </template>
-          </Column>
-          <Column
-            field="amount"
-            class="flex justify-end items-start calibril"
-            style="padding: 0 10px 0 10px !important"
-          >
-            <template #header>
-              <div class="py-2">
-                <h1>Total</h1>
-              </div>
-            </template>
-            <template #body="slotProp">
-              <div
-                class="bg-gray-100 text-end w-full font-bold"
-                v-if="slotProp.node.data.isSummary"
-              >
-                {{ slotProp.node.data.amount }}
-              </div>
-              <div class="" v-else>{{ slotProp.node.data.amount }}</div>
-            </template>
-          </Column>
-          <template #empty>
-            <div
-              class="w-full flex items-center justify-center"
-              style="height: 200px"
-            >
-              <h1>This report does not contain any data.</h1>
-            </div>
-          </template>
+        <TreeTable :value="dataTree">
+          <Column field="name" header="Name" :expander="true"></Column>
+          <Column field="total" header="Total"></Column>
         </TreeTable>
-        <div class="w-full py-5 mt-2">
-          <p>Accrual basis Monday, June 27, 2022 11:32 AM GMT+07:00</p>
-        </div>
       </div>
     </div>
   </div>
@@ -290,6 +187,7 @@ import Sidebar from "primevue/sidebar";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import RadioButton from "primevue/radiobutton";
+import jsonData from "../../Data/report-profit-and-loss.json";
 
 export default {
   components: {
@@ -302,61 +200,6 @@ export default {
     RadioButton,
   },
   data() {
-    const nodes = [
-      {
-        key: "0",
-        data: { name: "Income", amount: 29024.8 },
-        children: [
-          {
-            key: "0-0",
-            data: { name: "Design income", amount: 4875.0 },
-            children: [
-              { key: "0-0-0", data: { name: "Testing1", amount: 100 } },
-              { key: "0-0-1", data: { name: "Testing2", amount: 100 } },
-            ],
-          },
-          {
-            key: "0-1",
-            data: { name: "Discounts given", amount: -174.0 },
-          },
-          {
-            key: "0-2",
-            data: { name: "Landscaping Services", amount: 20334.0 },
-          },
-          {
-            key: "0-3",
-            data: { name: "Other Income", amount: 180.0 },
-          },
-          {
-            key: "0-4",
-            data: { name: "Sales of Product Income", amount: 2001.25 },
-          },
-          {
-            key: "0-5",
-            data: { name: "Services", amount: 288.55 },
-          },
-          {
-            key: "0-6",
-            data: { name: "Shipping Income", amount: 15.0 },
-          },
-        ],
-      },
-      {
-        key: "1",
-        data: { name: "Applications", amount: 100 },
-        children: [
-          {
-            key: "1-0",
-            data: { name: "Applications", amount: 100 },
-          },
-          {
-            key: "1-1",
-            data: { name: "Applications", amount: 100 },
-          },
-        ],
-      },
-    ];
-
     const displayConlumnOptions = [
       { name: "Total Only", code: "NY" },
       { name: "Days", code: "RM" },
@@ -371,7 +214,6 @@ export default {
     ];
 
     return {
-      nodes,
       displayConlumnOptions,
       tableExpand: false,
       labelExpand: "Expand",
@@ -381,74 +223,58 @@ export default {
       selectedDisplayConlumnOption: "",
       fromDate: null,
       toDate: null,
+
+      report_header: null,
+      report_option: null,
+      report_rows: null,
+      jsonData: jsonData,
+      dataTree: null,
     };
   },
-  created() {},
+  created() {
+    this.report_header = jsonData.report_header;
+    this.report_rows = jsonData.report_rows;
+
+    this.convertObjTree(this.report_rows);
+  },
   methods: {
-    togglePrintOption() {
-      this.sideBarPrintOptionVisible = !this.sideBarPrintOptionVisible;
-    },
-    toggleExpand() {
-      if (this.tableExpand) {
-        this.labelExpand = "Expand";
-        this.collapseAll();
-      } else {
-        this.labelExpand = "Collapse";
-        this.expandAll();
-      }
-      this.tableExpand = !this.tableExpand;
-    },
-    expandAll() {
-      for (let node of this.nodes) {
-        this.expandNode(node);
-      }
-
-      this.expandedKeys = { ...this.expandedKeys };
-    },
-    collapseAll() {
-      this.expandedKeys = {};
-    },
-    expandNode(node) {
-      if (node.children && node.children.length) {
-        this.expandedKeys[node.key] = true;
-        for (let child of node.children) {
-          this.expandNode(child);
+    convertObjTree(reportData) {
+      var objData = [];
+      reportData.forEach((items) => {
+        if (items.parent_id == 0) {
+          objData.push({
+            id: items.id,
+            data: {
+              name: items.name,
+              name_in_khmer: items.name_in_khmer,
+              total: items.total,
+            },
+            children: this.getChildren(items.id),
+          });
         }
+      });
+      this.dataTree = objData;
+    },
+    getChildren(id) {
+      var objData = [];
+      const hasChilds = this.report_rows.filter((items) => {
+        return items.parent_id == id;
+      });
+      //check filter hase items or childs
+      if (hasChilds.length > 0) {
+        hasChilds.forEach((items) => {
+          objData.push({
+            id: items.id,
+            data: {
+              name: items.name,
+              name_in_khmer: items.name_in_khmer,
+              total: items.total,
+            },
+            children: this.getChildren(items.id),
+          });
+        });
       }
-    },
-    showMoreOption() {
-      this.showOption = !this.showOption;
-    },
-    onNodeExpand(row) {
-      // generate sammary section
-      const data = {
-        key: row.key + row.data.name,
-        data: {
-          name: `Total ${row.data.name}`,
-          amount: `$ ${row.data.amount}`,
-          isSummary: true,
-        },
-      };
-
-      const index = this.nodes.findIndex((node) => node.key == row.key);
-      this.nodes.splice(index + 1, 0, data);
-      console.log(index);
-      // this.nodes.push(data);
-    },
-    onNodeCollapse(row) {
-      //! remove sammary section
-
-      //find array location
-      const index = this.nodes.findIndex(
-        (node) => node.key == row.key + row.data.name
-      );
-
-      /**
-       * function splice use to remove the object in array
-       * param 1 it is the location of array that you wanna delete
-       * param 2 number of object you wanna delete
-       */
-      this.nodes.splice(index, 1);
+      return objData;
     },
   },
 };
