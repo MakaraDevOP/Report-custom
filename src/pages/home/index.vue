@@ -113,15 +113,7 @@
         <div class="flex items-cemter justify-end">
           <div class="relative">
             <div
-              class="
-                absolute
-                top-20
-                right-0
-                flex
-                items-start
-                justify-end
-                space-x-2
-              "
+              class="absolute top-20 right-0 flex items-start justify-end space-x-2"
             >
               <Button
                 @click="togglePrintOption"
@@ -138,21 +130,7 @@
 
             <div
               @click="showMoreOption"
-              class="
-                cursor-pointer
-                h-8
-                w-8
-                rounded
-                bg-gray-100
-                border border-blue-500
-                text-blue-500
-                absolute
-                -bottom-4
-                right-0
-                flex
-                items-center
-                justify-center
-              "
+              class="cursor-pointer h-8 w-8 rounded bg-gray-100 border border-blue-500 text-blue-500 absolute -bottom-4 right-0 flex items-center justify-center"
             >
               <span
                 class="pi"
@@ -165,25 +143,60 @@
           </div>
         </div>
       </div>
-      <!-- Table -->
+
       <div class="container mx-auto border h-auto p-2" style="width: 1200px">
-        <TreeTable :value="dataTree">
-          <Column field="name" header="Name" :expander="true"></Column>
-          <Column field="total" header="Total"></Column>
+        <TreeTable
+          :value="baseData"
+          class="p-treetable-sm"
+          style="margin-bottom: 2rem"
+          :resizableColumns="true"
+          :expandedKeys="expandedKeys"
+          :metaKeySelection="true"
+          @node-expand="expand"
+          @node-collapse="collapse"
+          @node-select="seclected"
+          selectionMode="single"
+          v-model:selectionKeys="key"
+        >
+          <Column field="name" header="" :expander="true">
+            <template #body="slotProps">
+              <span
+                class="text-xs"
+                :class="
+                  slotProps.node.data.row == 'SummaryRow'
+                    ? 'font-bold  total-row'
+                    : ''
+                "
+              >
+                {{ slotProps.node.data.name }}</span
+              >
+            </template>
+          </Column>
+          <Column field="total" header="Total" headerStyle="width: 8em">
+            <template #body="slotProps">
+              <span
+                class="text-xs"
+                :class="
+                  slotProps.node.data.row == 'SummaryRow'
+                    ? 'font-bold  total-row'
+                    : ''
+                "
+              >
+                {{ slotProps.node.data.total }}</span
+              >
+            </template>
+          </Column>
         </TreeTable>
       </div>
     </div>
   </div>
-  <Sidebar v-model:visible="sideBarPrintOptionVisible" position="right">
-    Content
-  </Sidebar>
 </template>
 
 <script>
 import TreeTable from "primevue/treetable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-import Sidebar from "primevue/sidebar";
+
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import RadioButton from "primevue/radiobutton";
@@ -194,93 +207,106 @@ export default {
     TreeTable,
     Column,
     Button,
-    Sidebar,
     Dropdown,
     Calendar,
     RadioButton,
   },
   data() {
     const displayConlumnOptions = [
-      { name: "Total Only", code: "NY" },
-      { name: "Days", code: "RM" },
-      { name: "Weeks", code: "LDN" },
-      { name: "Moths", code: "IST" },
-      { name: "Quar", code: "PRS" },
-      { name: "Years", code: "PRS" },
-      { name: "Customers", code: "PRS" },
-      { name: "Vendors", code: "PRS" },
-      { name: "Employees", code: "PRS" },
-      { name: "Products/Serivces", code: "PRS" },
+      {name: "Total Only", code: "NY"},
+      {name: "Days", code: "RM"},
+      {name: "Weeks", code: "LDN"},
+      {name: "Moths", code: "IST"},
+      {name: "Quar", code: "PRS"},
+      {name: "Years", code: "PRS"},
+      {name: "Customers", code: "PRS"},
+      {name: "Vendors", code: "PRS"},
+      {name: "Employees", code: "PRS"},
+      {name: "Products/Serivces", code: "PRS"},
     ];
 
     return {
       displayConlumnOptions,
-      tableExpand: false,
-      labelExpand: "Expand",
       expandedKeys: {},
-      sideBarPrintOptionVisible: false,
       showOption: false,
       selectedDisplayConlumnOption: "",
       fromDate: null,
       toDate: null,
-
       report_header: null,
       report_option: null,
       report_rows: null,
       jsonData: jsonData,
-      dataTree: null,
+      baseData: null,
+      key: "",
     };
   },
-  created() {
+  mounted() {
     this.report_header = jsonData.report_header;
-    this.report_rows = jsonData.report_rows;
-
-    this.convertObjTree(this.report_rows);
+    this.baseData = this.jsonData.report_rows;
+    this.expandAll();
   },
   methods: {
-    convertObjTree(reportData) {
-      var objData = [];
-      reportData.forEach((items) => {
-        if (items.parent_id == 0) {
-          objData.push({
-            id: items.id,
-            data: {
-              name: items.name,
-              name_in_khmer: items.name_in_khmer,
-              total: items.total,
-            },
-            children: this.getChildren(items.id),
-          });
-        }
-      });
-      this.dataTree = objData;
+    collapseAll() {
+      this.expandedKeys = {};
     },
-    getChildren(id) {
-      var objData = [];
-      const hasChilds = this.report_rows.filter((items) => {
-        return items.parent_id == id;
-      });
-      //check filter hase items or childs
-      if (hasChilds.length > 0) {
-        hasChilds.forEach((items) => {
-          objData.push({
-            id: items.id,
-            data: {
-              name: items.name,
-              name_in_khmer: items.name_in_khmer,
-              total: items.total,
-            },
-            children: this.getChildren(items.id),
-          });
-        });
+    expand(node) {
+      node.data.total = node.data.prevtotal;
+    },
+    collapse(node) {
+      var dataHead = node.data;
+      var dataChild = node.children;
+      dataHead.prevtotal = dataHead.total;
+      dataHead.total = this.findSummary(dataChild);
+    },
+    //Expand
+    findSummary(data) {
+      var total = null;
+      for (var x of data) {
+        if (x.data.row == "SummaryRow") {
+          total = x.data.total;
+        }
       }
-      return objData;
+      return total;
+    },
+
+    seclected(node) {
+      this.expandedKeys[node.key] = !this.expandedKeys[node.key];
+
+      if (this.expandedKeys[node.key] === true) {
+        this.expand(node);
+      } else {
+        this.collapse(node);
+      }
+    },
+    expandAll() {
+      for (let node of this.baseData) {
+        this.expandNode(node);
+      }
+      this.expandedKeys = {...this.expandedKeys};
+    },
+    expandNode(node) {
+      if (node.children && node.children.length) {
+        this.expandedKeys[node.key] = true;
+        for (let child of node.children) {
+          this.expandNode(child);
+        }
+      }
+    },
+    getToatal() {
+      var rowTotal = document.querySelectorAll(".total-row");
+      rowTotal.forEach((x) => {
+        x.parentElement.parentElement.classList.add(
+          "border-gray-800",
+          "border-solid",
+          "border-t-2",
+          "pt-2"
+        );
+      });
     },
   },
 };
 </script>
-
-<style >
+<style>
 .p-treetable-header {
   padding: 0 !important;
 }
@@ -315,5 +341,26 @@ export default {
 .p-treetable-tbody {
   border: none;
   background-color: brown;
+}
+.p-treetable.p-treetable-sm .p-treetable-tbody > tr > td {
+  padding: 0.1rem 0.1rem;
+}
+.p-treetable-toggler {
+  width: 23px !important;
+  height: 15px !important;
+}
+.p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: none !important;
+}
+.p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:enabled:hover {
+  color: #495057;
+  border-color: transparent;
+  background: none !important;
+}
+.p-treetable .p-treetable-tbody > tr.p-highlight .p-treetable-toggler {
+  color: #495057;
+  font-size: 8px !important;
 }
 </style>
