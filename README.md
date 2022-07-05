@@ -26,7 +26,9 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
+### Customize configuration 🤖👻
+
+### Description of Method in Reports 🤖👻👾
 
 ```
     //ការបិត​​ record ទាំងអស់
