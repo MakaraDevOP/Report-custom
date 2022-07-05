@@ -60,11 +60,13 @@ npm run lint
     },
     //ការចុចលើ  record  ទាំងអស់
     seclected(node) {
-      this.expandedKeys[node.key] = !this.expandedKeys[node.key];
-      if (this.expandedKeys[node.key] === true) {
-        this.expand(node);
-      } else {
-        this.collapse(node);
+      if (node.children.length > 0) {
+        this.expandedKeys[node.key] = !this.expandedKeys[node.key];
+        if (this.expandedKeys[node.key] === true) {
+          this.expand(node);
+        } else {
+          this.collapse(node);
+        }
       }
     },
     //*ការបើក record row ណាមួយ
