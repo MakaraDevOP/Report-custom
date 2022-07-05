@@ -249,16 +249,19 @@ export default {
     collapseAll() {
       this.expandedKeys = {};
     },
+
     expand(node) {
       node.data.total = node.data.prevtotal;
     },
+
     collapse(node) {
       var dataHead = node.data;
       var dataChild = node.children;
+
       dataHead.prevtotal = dataHead.total;
+
       dataHead.total = this.findSummary(dataChild);
     },
-    //Expand
     findSummary(data) {
       var total = null;
       for (var x of data) {
@@ -268,16 +271,18 @@ export default {
       }
       return total;
     },
-
+    //ការចុចលើ  record  ទាំងអស់
     seclected(node) {
-      this.expandedKeys[node.key] = !this.expandedKeys[node.key];
-
-      if (this.expandedKeys[node.key] === true) {
-        this.expand(node);
-      } else {
-        this.collapse(node);
+      if (node.children.length > 0) {
+        this.expandedKeys[node.key] = !this.expandedKeys[node.key];
+        if (this.expandedKeys[node.key] === true) {
+          this.expand(node);
+        } else {
+          this.collapse(node);
+        }
       }
     },
+    //*ការបើក record row ណាមួយ
     expandAll() {
       for (let node of this.baseData) {
         this.expandNode(node);
@@ -291,17 +296,6 @@ export default {
           this.expandNode(child);
         }
       }
-    },
-    getToatal() {
-      var rowTotal = document.querySelectorAll(".total-row");
-      rowTotal.forEach((x) => {
-        x.parentElement.parentElement.classList.add(
-          "border-gray-800",
-          "border-solid",
-          "border-t-2",
-          "pt-2"
-        );
-      });
     },
   },
 };
