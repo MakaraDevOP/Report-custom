@@ -69,7 +69,7 @@
                 "fully_qualified_name": null,
                 "type": "Section",
                 "group": "Income",
-                "total": "100",
+                "total": null,
                 "order": 1
             },
             "children": [
