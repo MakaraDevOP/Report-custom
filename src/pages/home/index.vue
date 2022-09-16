@@ -1,286 +1,416 @@
 <template>
-  <div class="overflow-y-scroll" style="height: 100vh">
-    <div class="w-full h-auto pb-32">
-      <!-- form -->
-      <div
-        class="bg-gray-100 mb-5 flex flex-row px-3 py-1"
-        id="option-panel"
-        :class="{
-          'option-panel-expand': showOption,
-          'option-panel-collapse': !showOption,
-        }"
-      >
-        <div
-          class="w-full flex flex-col items-start justify-start space-y-4 p-2"
-          style="overflow: hidden"
-        >
-          <div class="flex flex-col justify-start items-start">
-            <h1 class="text-2xl font-bold py-2 truncate">
-              Profit and Loss Report
-            </h1>
-            <div
-              class="flex items-center space-x-2 text-blue-400 cursor-pointer"
-            >
-              <span class="pi pi-angle-left"></span>
-              <span>Back to report list</span>
-            </div>
-          </div>
-          <div class="justify-start items-start space-y-2">
-            <div class="text-start text-xs">
-              <span>Report period</span>
-            </div>
-            <div class="flex flex-row space-x-3 items-center">
-              <div class="">
-                <input
-                  class="p-inputtext p-inputtext-sm"
-                  style="height: 30px"
-                  type="text"
-                />
-              </div>
-              <div class="">
-                <Calendar
-                  v-model="fromDate"
-                  style="height: 30px; width: 130px"
-                  class="text-xs"
-                />
-              </div>
-              <p>to</p>
-              <div class="">
-                <Calendar
-                  v-model="toDate"
-                  style="height: 30px; width: 130px"
-                  class="text-xs"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="w-full flex space-x-3 mt-5 text-xs">
-            <div class="flex flex-col space-y-2">
-              <label for="" class="flex justify-start truncate"
-                >Display columns by</label
-              >
-              <Dropdown
-                v-model="selectedDisplayConlumnOption"
-                :options="displayConlumnOptions"
-                optionLabel="name"
-                placeholder="Select display columns"
-                class="p-dropdown-sm flex items-center text-start w-full"
-                style="height: 30px; width: 175px"
-              />
-            </div>
-            <div class="flex flex-col space-y-2">
-              <label for="" class="flex justify-start truncate"
-                >Show non-zero or active only</label
-              >
-              <input
-                class="p-inputtext p-inputtext-sm"
-                style="height: 30px"
-                type="text"
-              />
-            </div>
-            <div class="flex flex-col space-y-2">
-              <label for="" class="flex justify-start truncate"
-                >Compare another period</label
-              >
-              <input
-                class="p-inputtext p-inputtext-sm"
-                style="height: 30px"
-                type="text"
-              />
-            </div>
-            <div class="flex flex-col space-y-2" style="width: 150px">
-              <label for="" class="flex justify-start truncate"
-                >Accounting method</label
-              >
-              <div class="flex flex-row items-center justify-between">
-                <div class="flex items-center space-x-1">
-                  <RadioButton></RadioButton> <label for="">Cash</label>
-                </div>
-                <div class="flex items-center space-x-1">
-                  <RadioButton></RadioButton> <label for="">Accrual</label>
-                </div>
-              </div>
-            </div>
-            <div class="flex flex-col px-8" style="width: 150px">
+  <div class="flex bg-gray-100">
+    <div class="flex flex-col">
+      <div class="bg-white py-2 h-14 shadow-b-md">
+        <div class="flex">
+          <div class="w-1/2"> </div>
+          <div class="w-1/2 flex space-x-2 justify-end items-center px-3">
+            <div class="flex space-x-2 justify-end items-center">
+              <Button icon="pi pi-print" class="p-button-sm" />
               <Button
-                label="Refresh"
-                class="p-button-sm p-button-info p-button-outlined truncate"
-                style="height: 30px !important"
-              ></Button>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-cemter justify-end">
-          <div class="relative">
-            <div
-              class="
-                absolute
-                top-20
-                right-0
-                flex
-                items-start
-                justify-end
-                space-x-2
-              "
-            >
-              <Button
-                @click="togglePrintOption"
-                label="Customize"
-                class="p-button-sm p-button-info p-button-outlined truncate"
-                style="height: 35px !important"
-              ></Button>
-              <Button
-                label="Save Customize"
-                class="p-button-sm p-button-info truncate"
-                style="height: 35px !important"
-              ></Button>
-            </div>
-
-            <div
-              @click="showMoreOption"
-              class="
-                cursor-pointer
-                h-8
-                w-8
-                rounded
-                bg-gray-100
-                border border-blue-500
-                text-blue-500
-                absolute
-                -bottom-4
-                right-0
-                flex
-                items-center
-                justify-center
-              "
-            >
-              <span
-                class="pi"
-                :class="{
-                  'pi-angle-up': showOption,
-                  'pi-angle-down': !showOption,
-                }"
-              ></span>
+                icon="pi pi-cog"
+                class="p-button-sm p-button-secondary"
+                @click="displayNav = !displayNav"
+              />
             </div>
           </div>
         </div>
       </div>
-      <!-- Table -->
-      <div class="container mx-auto border h-auto p-2" style="width: 1200px">
-        <TreeTable :value="dataTree">
-          <Column field="name" header="Name" :expander="true"></Column>
-          <Column field="total" header="Total"></Column>
-        </TreeTable>
+      <div
+        class="w-full overflow-x-auto px-5 reports-scroll"
+        style="height: calc(100vh - 8rem)"
+        :style="
+          displayNav != true
+            ? 'width: calc(100vw'
+            : 'width: calc(100vw - 24rem);'
+        "
+      >
+        <div class="h-full mx-auto border my-5 h-auto" style="width: 1024px">
+          <div class="w-full bg-white py-5">
+            <div class="flex">
+              <div class="w-1/4">
+                <div class="p-3">
+                  <div
+                    v-if="editInfo"
+                    class="flex justify-start items-center space-x-2"
+                  >
+                    <Checkbox
+                      v-model="showLogo"
+                      :binary="true"
+                      id="show_logo"
+                    />
+                    <label class="text-xs" for="show_logo">Show Logo</label>
+                  </div>
+                  <img
+                    v-if="showLogo"
+                    :src="report_header.report_company_preference.logo_url"
+                    alt=""
+                  />
+                </div>
+              </div>
+              <div class="w-2/4">
+                <div class="w-full flex flex-col justify-center items-center">
+                  <InputText
+                    v-if="editInfo"
+                    type="text"
+                    class="p-inputtext-sm font-khmer text-sky-500 w-96"
+                    v-model="Company_name"
+                  />
+                  <h1 v-else class="text-xl font-bold">
+                    {{ Company_name }}
+                  </h1>
+                  <div class="py-2">
+                    <InputText
+                      v-if="editInfo"
+                      type="text"
+                      class="p-inputtext-sm text-sky-500 w-56"
+                      v-model="Reporttype"
+                    />
+                    <h1 v-else class="text-lg font-bold">
+                      {{ Reporttype }}
+                    </h1>
+                    <p class="font-khmer py-2">{{
+                      report_header.report_subtitle
+                    }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="w-1/4 flex justify-end items-end">
+                <Button
+                  v-if="editInfo"
+                  label="Save Update"
+                  icon="pi pi-check-circle"
+                  class="p-button-info p-button-sm"
+                  @click="editInfo = false"
+                />
+                <!-- <Button
+                v-if="editInfo"
+                icon="pi pi-bookmark"
+                label="Save"
+                class="p-button-rounded p-button-secondary p-button-sm"
+                @click="editInfo = false"
+              /> -->
+              </div>
+            </div>
+          </div>
+          <TreeTable
+            :value="baseData"
+            class="p-treetable-sm"
+            style="margin-bottom: 2rem"
+            :resizableColumns="true"
+            :expandedKeys="expandedKeys"
+            :metaKeySelection="true"
+            @node-expand="expand"
+            @node-collapse="collapse"
+            @node-select="seclected"
+            selectionMode="single"
+            v-model:selectionKeys="key"
+          >
+            <Column field="name" header="" :expander="true">
+              <template #body="slotProps">
+                <span
+                  class="text-xs"
+                  :class="
+                    slotProps.node.data.row == 'SummaryRow'
+                      ? 'font-bold  total-row'
+                      : ''
+                  "
+                >
+                  {{ slotProps.node.data.name }}</span
+                >
+              </template>
+            </Column>
+            <Column field="total" header="Total" headerStyle="width: 8em">
+              <template #body="slotProps">
+                <span
+                  class="text-xs"
+                  :class="
+                    slotProps.node.data.row == 'SummaryRow' ||
+                    slotProps.node.children.length > 0
+                      ? 'font-bold  total-row'
+                      : ''
+                  "
+                >
+                  {{ formatCurrency_deci(slotProps.node.data.total) }}</span
+                >
+              </template>
+            </Column>
+          </TreeTable>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-96 bg-gray-50 h-auto overflow-hidden relative flex flex-col justify-between"
+      v-show="displayNav"
+    >
+      <div class="option">
+        <div class="py-3 text-left px-10">
+          <h2 class="font-bold text-xl"
+            >Option Report
+            <span class="font-bold text-sky-600 text-xl"
+              >Profit and Lost</span
+            ></h2
+          >
+        </div>
+        <div
+          class="report_period flex flex-col px-10 justify-start items-start"
+        >
+          <p class="text-sm py-2">Report period</p>
+          <Dropdown
+            v-model="selectedPeriod"
+            :options="periodData"
+            class="w-64"
+            optionLabel="name"
+            optionValue="code"
+            placeholder="Select reports period"
+          />
+          <p class="text-sm py-2">From</p>
+          <Calendar
+            id="basic"
+            v-model="date1"
+            class="w-64"
+            autocomplete="off"
+          />
+          <p class="text-sm py-2">To</p>
+          <Calendar
+            id="basic"
+            v-model="date1"
+            class="w-64"
+            autocomplete="off"
+          />
+        </div>
+        <div
+          class="report_period flex flex-col px-10 justify-start items-start"
+        >
+          <p class="text-sm py-2">Display columns by</p>
+          <Dropdown
+            v-model="selectedPeriod"
+            :options="periodData"
+            class="w-64"
+            optionLabel="name"
+            optionValue="code"
+            placeholder="Select reports period"
+          />
+          <p class="text-sm py-2"> Show non-zero or active only</p>
+          <Dropdown
+            v-model="selectedGroupedCity"
+            :options="groupedCities"
+            optionLabel="label"
+            class="w-64"
+            optionGroupLabel="label"
+            optionGroupChildren="items"
+          >
+            <template>
+              <div class="flex align-items-center country-item">
+                <h5>Basic</h5>
+                <div class="field-radiobutton">
+                  <RadioButton
+                    id="city1"
+                    name="city"
+                    value="Chicago"
+                    v-model="city"
+                  />
+                  <label for="city1">Chicago</label>
+                </div>
+                <div class="field-radiobutton">
+                  <RadioButton
+                    id="city2"
+                    name="city"
+                    value="Los Angeles"
+                    v-model="city"
+                  />
+                  <label for="city2">Los Angeles</label>
+                </div>
+                <div class="field-radiobutton">
+                  <RadioButton
+                    id="city3"
+                    name="city"
+                    value="New York"
+                    v-model="city"
+                  />
+                  <label for="city3">New York</label>
+                </div>
+                <div class="field-radiobutton">
+                  <RadioButton
+                    id="city4"
+                    name="city"
+                    value="San Francisco"
+                    v-model="city"
+                  />
+                  <label for="city4">San Francisco</label>
+                </div>
+              </div>
+            </template>
+          </Dropdown>
+          <p class="text-sm py-2"> Compare another period</p>
+          <Calendar
+            id="basic"
+            v-model="date1"
+            class="w-64"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="run_report">
+        <div class="flex flex flex-col px-10 justify-start items-start py-5">
+          <Button label="Run Report" class="p-button-sm" />
+        </div>
       </div>
     </div>
   </div>
-  <Sidebar v-model:visible="sideBarPrintOptionVisible" position="right">
-    Content
-  </Sidebar>
 </template>
 
 <script>
 import TreeTable from "primevue/treetable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-import Sidebar from "primevue/sidebar";
+
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import RadioButton from "primevue/radiobutton";
 import jsonData from "../../Data/report-profit-and-loss.json";
+import InputText from "primevue/inputtext";
+import Checkbox from "primevue/checkbox";
 
 export default {
   components: {
     TreeTable,
     Column,
     Button,
-    Sidebar,
     Dropdown,
     Calendar,
     RadioButton,
+    InputText,
+    Checkbox,
   },
   data() {
-    const displayConlumnOptions = [
-      { name: "Total Only", code: "NY" },
-      { name: "Days", code: "RM" },
-      { name: "Weeks", code: "LDN" },
-      { name: "Moths", code: "IST" },
-      { name: "Quar", code: "PRS" },
-      { name: "Years", code: "PRS" },
-      { name: "Customers", code: "PRS" },
-      { name: "Vendors", code: "PRS" },
-      { name: "Employees", code: "PRS" },
-      { name: "Products/Serivces", code: "PRS" },
+    const periodData = [
+      {name: "Total Only", code: "1"},
+      {name: "Days", code: "2"},
+      {name: "Weeks", code: "3"},
+      {name: "Moths", code: "4"},
+      {name: "Quar", code: "5"},
+      {name: "Years", code: "6"},
+      {name: "Customers", code: "7"},
+      {name: "Vendors", code: "8"},
+      {name: "Employees", code: "9"},
+      {name: "Products/Serivces", code: "10"},
     ];
 
     return {
-      displayConlumnOptions,
-      tableExpand: false,
-      labelExpand: "Expand",
       expandedKeys: {},
-      sideBarPrintOptionVisible: false,
       showOption: false,
       selectedDisplayConlumnOption: "",
       fromDate: null,
       toDate: null,
-
       report_header: null,
       report_option: null,
       report_rows: null,
       jsonData: jsonData,
-      dataTree: null,
+      baseData: null,
+      key: "",
+      Reporttype: "Profit and Lost",
+      Company_name: "",
+      editInfo: false,
+      showLogo: true,
+      displayNav: true,
+      periodData,
+      selectedPeriod: "",
     };
   },
   created() {
-    this.report_header = jsonData.report_header;
-    this.report_rows = jsonData.report_rows;
-
-    this.convertObjTree(this.report_rows);
+    this.report_header = this.jsonData.report_header;
+    this.baseData = this.jsonData.report_rows;
+  },
+  mounted() {
+    (this.Company_name =
+      this.report_header.report_company_preference.name_of_enterprise),
+      this.expandAll();
   },
   methods: {
-    convertObjTree(reportData) {
-      var objData = [];
-      reportData.forEach((items) => {
-        if (items.parent_id == 0) {
-          objData.push({
-            id: items.id,
-            data: {
-              name: items.name,
-              name_in_khmer: items.name_in_khmer,
-              total: items.total,
-            },
-            children: this.getChildren(items.id),
-          });
-        }
-      });
-      this.dataTree = objData;
+    collapseAll() {
+      this.expandedKeys = {};
     },
-    getChildren(id) {
-      var objData = [];
-      const hasChilds = this.report_rows.filter((items) => {
-        return items.parent_id == id;
-      });
-      //check filter hase items or childs
-      if (hasChilds.length > 0) {
-        hasChilds.forEach((items) => {
-          objData.push({
-            id: items.id,
-            data: {
-              name: items.name,
-              name_in_khmer: items.name_in_khmer,
-              total: items.total,
-            },
-            children: this.getChildren(items.id),
-          });
-        });
+
+    expand(node) {
+      this.expandedKeys = {...this.expandedKeys};
+      node.data.total = node.data.prevtotal;
+    },
+
+    collapse(node) {
+      this.expandedKeys = {...this.expandedKeys};
+      var dataHead = node.data;
+      var dataChild = node.children;
+      dataHead.prevtotal = dataHead.total;
+      dataHead.total = this.findSummary(dataChild);
+    },
+    findSummary(data) {
+      var total = null;
+      for (var x of data) {
+        if (x.data.row == "SummaryRow") {
+          total = x.data.total;
+        }
       }
-      return objData;
+      return total;
+    },
+    //ការចុចលើ  record  ទាំងអស់
+    seclected(node) {
+      if (node.children.length > 0) {
+        this.expandedKeys[node.key] = !this.expandedKeys[node.key];
+        if (this.expandedKeys[node.key] == true) {
+          this.expand(node);
+        } else {
+          this.collapse(node);
+        }
+      }
+    },
+    //*ការបើក record row ណាមួយ
+    expandAll() {
+      for (let node of this.baseData) {
+        this.expandNode(node);
+      }
+      this.expandedKeys = {...this.expandedKeys};
+    },
+    expandNode(node) {
+      if (node.children && node.children.length) {
+        this.expandedKeys[node.key] = true;
+        for (let child of node.children) {
+          this.expandNode(child);
+        }
+      }
+    },
+
+    // ការបំលែងប្រាក់
+    formatCurrency_deci(value) {
+      let val;
+      if (value != null) {
+        val = parseFloat(value)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,");
+        val.toLocaleString("en-US");
+      } else {
+        val = value;
+      }
+      return val;
+    },
+
+    formatCurrency(value) {
+      if (value != null) {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(value);
+      }
     },
   },
 };
 </script>
-
-<style >
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Khmer&display=swap");
+.font-khmer {
+  font-family: "Khmer", cursive;
+}
 .p-treetable-header {
   padding: 0 !important;
 }
@@ -315,5 +445,39 @@ export default {
 .p-treetable-tbody {
   border: none;
   background-color: brown;
+}
+.p-treetable.p-treetable-sm .p-treetable-tbody > tr > td {
+  padding: 0.1rem 0.1rem;
+}
+.p-treetable-toggler {
+  width: 23px !important;
+  height: 15px !important;
+  z-index: 1 !important;
+}
+.p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: none !important;
+  z-index: 1 !important;
+}
+.p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:enabled:hover {
+  color: #495057;
+  border-color: transparent;
+  background: none !important;
+  z-index: 1 !important;
+}
+.p-treetable .p-treetable-tbody > tr.p-highlight .p-treetable-toggler {
+  color: #495057;
+  font-size: 8px !important;
+  z-index: 1 !important;
+}
+.reports-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.reports-scroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>

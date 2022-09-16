@@ -1,36 +1,3 @@
-
-
-# ABA: 002340640 👌😂😂​​ ​​
-
-## Project setup
-
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-
-```
-npm run build
-```
-
-### Lints and fixes files
-
-```
-npm run lint
-```
-
-### Customize configuration 🤖👻
-
-### Description of Method in Reports 🤖👻👾
-
-```
     //ការបិត​​ record ទាំងអស់
     collapseAll() {
       this.expandedKeys = {};
@@ -60,13 +27,11 @@ npm run lint
     },
     //ការចុចលើ  record  ទាំងអស់
     seclected(node) {
-      if (node.children.length > 0) {
-        this.expandedKeys[node.key] = !this.expandedKeys[node.key];
-        if (this.expandedKeys[node.key] === true) {
-          this.expand(node);
-        } else {
-          this.collapse(node);
-        }
+      this.expandedKeys[node.key] = !this.expandedKeys[node.key];
+      if (this.expandedKeys[node.key] === true) {
+        this.expand(node);
+      } else {
+        this.collapse(node);
       }
     },
     //*ការបើក record row ណាមួយ
@@ -85,6 +50,3 @@ npm run lint
       }
     },
   },
-```
-
-![report](https://user-images.githubusercontent.com/97021587/190304737-9523fb00-df15-408a-8520-f7b6adc2074c.png)
